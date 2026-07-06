@@ -111,11 +111,4 @@ Customer-Feedback-Dashboard/
 
 ---
 
-## 👤 Author
 
-**Mohamed Samy**
-
-**Data Analyst | SQL | Power BI | Excel | DAX | Power Query | Data Modeling**
-
-- LinkedIn: https://linkedin.com/in/your-linkedin
-- GitHub: https://github.com/mosamy26666-hub
