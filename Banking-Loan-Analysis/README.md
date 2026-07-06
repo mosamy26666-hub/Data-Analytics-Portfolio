@@ -19,6 +19,5 @@ Analyze loan applications and customer performance.
 - Identified high-risk customer segments.
 - Improved loan approval analysis.
 
-## Dashboard Preview
 
-(ضع صورة هنا)
+(
