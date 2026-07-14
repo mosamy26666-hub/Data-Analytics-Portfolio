@@ -1,0 +1,131 @@
+table procurement_orders
+	lineageTag: e09bbc00-84ab-4750-95e4-f83cc3abfdcc
+
+	column PO_ID
+		dataType: string
+		lineageTag: 053781dd-f8d2-4e75-bc8e-f0326ad85f2b
+		summarizeBy: none
+		sourceColumn: PO_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Supplier_ID
+		dataType: string
+		lineageTag: 24e22465-6df7-4239-8637-70920c866faa
+		summarizeBy: none
+		sourceColumn: Supplier_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Raw_Material_ID
+		dataType: string
+		lineageTag: 12206a28-3436-4f76-a03b-3f45b2b5d20c
+		summarizeBy: none
+		sourceColumn: Raw_Material_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Order_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 85178007-1462-42eb-9feb-d809d94a3b3c
+		summarizeBy: none
+		sourceColumn: Order_Date
+
+		variation Variation
+			isDefault
+			relationship: e55dd8cf-e433-47c4-b54f-dcfb86b228e2
+			defaultHierarchy: LocalDateTable_0f7dec99-921d-44f8-b465-c4885a39163a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Order_Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 0ff42752-2292-4408-8285-d7ece7078f35
+		summarizeBy: sum
+		sourceColumn: Order_Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Unit_Cost
+		dataType: double
+		lineageTag: 9cc6a024-1ec0-4d9b-959d-c5d5d7a24345
+		summarizeBy: sum
+		sourceColumn: Unit_Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Delivery_Date_Planned
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a41e1613-25f1-4c23-a4be-0de51e7367ac
+		summarizeBy: none
+		sourceColumn: Delivery_Date_Planned
+
+		variation Variation
+			isDefault
+			relationship: 71b52dea-4cbf-4d91-94e9-2bce8c8f4e9c
+			defaultHierarchy: LocalDateTable_3e1cb88d-25ab-4a88-bf6c-33d16ef64786.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Delivery_Date_Actual
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f34602be-7085-4846-babe-c66a612b3264
+		summarizeBy: none
+		sourceColumn: Delivery_Date_Actual
+
+		variation Variation
+			isDefault
+			relationship: 49bb5002-5a15-4c4b-8c14-29ccdd21646c
+			defaultHierarchy: LocalDateTable_e07c1255-e2af-497b-a296-fa367acd62af.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Total_Cost
+		dataType: double
+		lineageTag: e80e25f5-4360-4b1e-bd89-e2c1e5f2f4be
+		summarizeBy: sum
+		sourceColumn: Total_Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Duration.Days'
+		dataType: int64
+		formatString: 0
+		lineageTag: c5c2e7c5-272d-4bc0-b7d5-5acd527c53d7
+		summarizeBy: sum
+		sourceColumn: Duration.Days
+
+		annotation SummarizationSetBy = Automatic
+
+	partition procurement_orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Mohamed Samy\Downloads\archive (11)\procurement_orders.csv"),[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"PO_ID", type text}, {"Supplier_ID", type text}, {"Raw_Material_ID", type text}, {"Order_Date", type date}, {"Order_Quantity", Int64.Type}, {"Unit_Cost", type number}, {"Delivery_Date_Planned", type date}, {"Delivery_Date_Actual", type date}, {"Total_Cost", type number}}),
+				    #"Inserted Date Subtraction" = Table.AddColumn(#"Changed Type", "Subtraction", each Duration.Days([Delivery_Date_Actual] - [Order_Date]), Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Inserted Date Subtraction",{{"Subtraction", "Duration.Days"}}),
+				    #"Removed Duplicates" = Table.Distinct(#"Renamed Columns", {"PO_ID"}),
+				    #"Removed Duplicates1" = Table.Distinct(#"Removed Duplicates", {"Supplier_ID"})
+				in
+				    #"Removed Duplicates1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
